@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Edit Song: {{ song.title }}</h2>
+    
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <!-- Submit Button for Updating -->
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        
+        <!-- Delete Button - Redirects to Delete View -->
+        <a href="{% url 'delete_song' song.id %}" class="btn btn-danger">Delete</a>
+    </form>
+
+    <br>
+    <!-- Back to All Songs -->
+    <a href="{% url 'all_songs' %}" class="btn btn-secondary">Back to All Songs</a>
+{% endblock %}

@@ -1,0 +1,557 @@
+<a href="{% url 'all_songs' %}" class="all-songs-btn">All Song List</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Music Player{% endblock %}</title>
+   
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <style>
+        body {
+    background-color: black;
+    color: white; /* Ensures text is visible */
+}
+
+.container {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+        }
+
+          /* RGB Aura Effect */
+          h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            position: absolute;  /* Allows precise positioning */
+            left: 580px;   /* Adjust left position */
+            top: 65px;    /* Adjust top position */
+            animation: rgbGlow 5s infinite linear;
+        }
+        
+     
+
+        @keyframes rgbGlow {
+            0% { text-shadow: 0 0 10px rgb(21, 179, 219), 0 0 20px rgb(255, 0, 200), 0 0 30px rgb(18, 182, 18); }
+            25% { text-shadow: 0 0 10px rgb(255, 0, 183), 0 0 20px rgb(151, 11, 151), 0 0 30px rgb(15, 106, 192); }
+            50% { text-shadow: 0 0 10px green, 0 0 20px red, 0 0 30px blue; }
+            75% { text-shadow: 0 0 10px red, 0 0 20px rgb(144, 18, 223), 0 0 30px rgb(189, 160, 17); }
+            100% { text-shadow: 0 0 10px blue, 0 0 20px rgb(179, 126, 20), 0 0 30px red; }
+        }
+
+
+        /* Parent Container */
+.track-container {
+    display: flex;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: center; /* Center vertically */
+    height: 51vh; /* Full height of the screen */
+    padding: 20px; /* Adjust spacing */
+}
+
+/* Align to the Center */
+.track-container.center {
+    align-items: center; /* Center horizontally */
+    text-align: center;
+}
+
+#track-cover {
+    width: 250px; /* Adjust width */
+    height: 250px; /* Adjust height */
+    border-radius: 10px; /* Optional: Rounded corners */
+    object-fit: cover;
+    margin-bottom: 20px;
+}
+
+/* Adjust Text Elements */
+#track-title, #track-artist, #track-category {
+    margin: 10px 0;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+
+
+#time-display {
+    text-align: center; /* Center text */
+    margin-top: 10px; /* Add space below seek bar */
+    font-size: 16px; /* Adjust font size */
+    color: white; /* Adjust text color */
+}
+
+
+
+
+
+        /* Logout Button Styling */
+        .logout-container {
+            position: absolute;
+            top: 9px;
+            right: 20px;
+        }
+
+        .logout-btn {
+            background-color: rgb(255, 12, 12);
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        .logout-btn:hover {
+            background-color: darkgreen;
+        }
+
+        /* Search Bar */
+        .search-container {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .search-input {
+            padding: 10px;
+            width: 50%;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 1px solid gray;
+        }
+
+        .search-btn {
+            padding: 10px 15px;
+            background-color: blue;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            border-radius: 5px;
+        }
+
+        /* Player Controls */
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+
+
+        .volume-control {
+            width: 100px;
+        }
+
+
+        .volume-container {
+    position: fixed;
+    bottom: 70px; /* High or Low */
+    right: 450px; /* Adjust as needed */
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between icon and slider */
+    background: rgba(0, 0, 0, 0.296);
+    padding: 10px 15px;
+    border-radius: 50px;
+    box-shadow: 0px 6px 15px rgb(0, 0, 0);
+}
+
+.volume-icon {
+    font-size: 22px;
+    color: white;
+    cursor: pointer;
+}
+
+.volume-control {
+    width: 100px;
+    appearance: none;
+    background: transparent;
+}
+
+
+
+/* Custom styling for range input */
+.volume-control::-webkit-slider-runnable-track {
+    background: rgb(14, 228, 243);
+    height: 4px;
+    border-radius: 5px;
+}
+
+.volume-control::-webkit-slider-thumb {
+    appearance: none;
+    width: 12px;
+    height: 12px;
+    background: rgba(250, 250, 250, 0.992);
+    border-radius: 50%;
+    cursor: pointer;
+    margin-top: -4px;
+}
+
+.volume-control::-moz-range-track {
+    background: rgb(229, 239, 233);
+    height: 4px;
+    border-radius: 5px;
+}
+
+.volume-control::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: rgba(239, 243, 240, 0.963);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Control Buttons */
+.controls {
+    position: fixed;
+    bottom: 20px;
+    right: 640px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background:  black;
+    padding: 15px;
+    border-radius: 50px;
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0);
+}
+
+
+.controls button {
+    border: none;
+    padding: 15px 22px;
+    font-size: 20px;
+    font-weight: bold;
+    color: rgb(236, 234, 234);
+    border-radius: 50px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+/* Button Colors */
+#prev-track {
+    background: linear-gradient(45deg, red, purple, blue);
+}
+
+#play-pause {
+    background: linear-gradient(45deg, rgb(108, 133, 108), rgb(211, 211, 64), rgb(94, 88, 78));
+}
+
+#next-track {
+    background: linear-gradient(45deg, cyan, blue, violet);
+}
+
+/* Hover Effect */
+.controls button:hover {
+    transform: scale(1.1);
+    box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.6);
+}
+
+/* Centered Message Box */
+.message {
+    background-color: #D4EDDA; /* Light green background */
+    color: #155724; /* Dark green text */
+    border: 1px solid #C3E6CB; /* Border similar to success messages */
+    padding: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    text-align: center;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999; /* Ensure it's above other elements */
+}
+
+.all-songs-btn {
+    display: inline-block;
+    background-color: #28a745; /* Green color */
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 5px;
+    border: none;
+    transition: background 0.3s ease-in-out;
+}
+
+.all-songs-btn:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+
+
+        /* Time Display */
+        .time-container {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            margin-top: 5px;
+            color: white;
+        }
+
+        /* Seek Bar Container - Centering */
+#seek-bar {
+    width: 40%; /* Adjust width */
+    height: 10px;
+    background: #ccc;
+    cursor: pointer;
+    
+    /* Center Horizontally */
+    margin: 20px auto; /* Auto centers it */
+    display: flex; /* Use flex for better alignment */
+    justify-content: flex-start; /* Align progress bar */
+    align-items: center; /* Center vertically */
+    border-radius: 5px; /* Optional: Rounded edges */
+}
+
+/* Seek Bar Progress */
+#seek-progress {
+    width: 20%; /* Adjust progress */
+    height: 80%;
+    background: #57c8da;
+    border-radius: 5px;
+}
+
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Logout Button -->
+    <div class="logout-container">
+        <form action="{% url 'logout' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="search-container">
+        <form method="GET" action="{% url 'index' %}">
+            <input type="text" name="q" class="search-input" placeholder="Search by Title, Artist, or Category..." value="{{ search_query }}">
+            
+            <select name="category">
+                <option value="">All Categories</option>
+                {% for category in categories %}
+                    <option value="{{ category.name }}" {% if selected_category == category.name %}selected{% endif %}>
+                        {{ category.name }}
+                    </option>
+                {% endfor %}
+            </select>
+
+            <button type="submit" class="search-btn">Search</button>
+        </form>
+    </div> 
+    
+    
+    <div class="container">
+        <h1>Music  Player</h1>
+        {% block content %}{% endblock %}
+    </div>
+
+
+
+    <div class="track-container center">
+        <img id="track-cover" src="" alt="Album Cover">
+        <h2 id="track-title">Song Title</h2>
+        <h3 id="track-artist">Artist</h3>
+        <p id="track-category">Category</p>
+    </div>
+
+
+           <!-- Audio Player -->
+           <div class="audio-container">
+            <audio id="audio-player"></audio>
+        </div>
+
+
+        <div id="seek-bar">
+            <div id="seek-progress"></div>
+        </div>
+        
+
+
+        <div id="time-display">
+            <span id="current-time">0:00</span> / <span id="total-time">0:00</span>
+        </div>
+        
+
+      
+
+        <!-- Controls -->
+        <div class="controls">
+            <button id="prev-track">⏮</button>
+            <button id="play-pause">▶</button>
+            <button id="next-track">⏭</button>
+        </div>
+
+
+        <div class="volume-container">
+            <span class="volume-icon">🔊</span>
+            <input type="range" id="volume-slider" class="volume-control" min="0" max="1" step="0.1" value="0.5">
+        </div>
+        
+
+        <!-- Injected Song Data -->
+        <script id="track-data" type="application/json">
+            {{ tracks_json|safe }}
+        </script>
+    </div>
+
+   
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+    const tracks = JSON.parse(document.getElementById("track-data").textContent);
+    let currentIndex = 0;
+    const audioPlayer = document.getElementById("audio-player");
+    const playPauseButton = document.getElementById("play-pause");
+    const prevTrackButton = document.getElementById("prev-track");
+    const nextTrackButton = document.getElementById("next-track");
+    const trackCover = document.getElementById("track-cover");
+    const trackTitle = document.getElementById("track-title");
+    const trackArtist = document.getElementById("track-artist");
+    const trackCategory = document.getElementById("track-category");
+    const seekBar = document.getElementById("seek-bar");
+    const seekProgress = document.getElementById("seek-progress");
+    const volumeSlider = document.getElementById("volume-slider");
+    const currentTimeDisplay = document.getElementById("current-time");
+    const totalTimeDisplay = document.getElementById("total-time");
+
+    function formatTime(seconds) {
+        if (isNaN(seconds) || seconds < 0) return "0:00";
+        let min = Math.floor(seconds / 60);
+        let sec = Math.floor(seconds % 60);
+        return `${min}:${sec < 10 ? "0" : ""}${sec}`;
+    }
+
+    function loadTrack(index, autoplay = true) {
+        if (tracks.length === 0) {
+            alert("No songs available.");
+            return;
+        }
+
+        currentIndex = index; 
+        const track = tracks[currentIndex];
+
+        // Load track details
+        audioPlayer.src = track.file;
+        trackCover.src = track.image;
+        trackTitle.textContent = track.title;
+        trackArtist.textContent = track.artist;
+        trackCategory.textContent = track.category;
+
+        console.log("Now playing:", track.title);
+
+        // Update total time once metadata is loaded
+        audioPlayer.onloadedmetadata = function () {
+            totalTimeDisplay.textContent = formatTime(audioPlayer.duration);
+        };
+
+        if (autoplay) {
+            audioPlayer.play();
+            playPauseButton.innerHTML = "⏸"; 
+        }
+    }
+
+    function togglePlayPause() {
+        if (!audioPlayer.src) {
+            alert("No song loaded.");
+            return;
+        }
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+            playPauseButton.innerHTML = "⏸"; 
+        } else {
+            audioPlayer.pause();
+            playPauseButton.innerHTML = "▶"; 
+        }
+    }
+
+    playPauseButton.addEventListener("click", togglePlayPause);
+
+    // Next Track Button
+    nextTrackButton.addEventListener("click", function () {
+        currentIndex = (currentIndex + 1) % tracks.length;
+        loadTrack(currentIndex);
+    });
+
+    // Previous Track Button
+    prevTrackButton.addEventListener("click", function () {
+        currentIndex = (currentIndex - 1 + tracks.length) % tracks.length;
+        loadTrack(currentIndex);
+    });
+
+    // Update Seek Bar & Display Time
+    function updateSeekBar() {
+        if (!isNaN(audioPlayer.duration) && audioPlayer.duration > 0) {
+            const progress = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            seekProgress.style.width = `${progress}%`;
+            currentTimeDisplay.textContent = formatTime(audioPlayer.currentTime);
+        }
+    }
+
+    function seekTo(event) {
+        if (!isNaN(audioPlayer.duration) && audioPlayer.duration > 0) {
+            const seekTime = (event.offsetX / seekBar.clientWidth) * audioPlayer.duration;
+            audioPlayer.currentTime = seekTime;
+        }
+    }
+
+    function adjustVolume() {
+        audioPlayer.volume = parseFloat(volumeSlider.value);
+    }
+
+    seekBar.addEventListener("click", seekTo);
+    audioPlayer.addEventListener("timeupdate", updateSeekBar);
+    volumeSlider.addEventListener("input", adjustVolume);
+
+
+    // Auto-play next song when current song ends
+    audioPlayer.addEventListener("ended", function () {
+        currentIndex = (currentIndex + 1) % tracks.length;
+        loadTrack(currentIndex);
+    });
+
+    if (tracks.length > 0) {
+        loadTrack(0);
+    }
+});
+
+    </script>
+
+   <!-- Dynamic Messages -->
+   {% if messages %}
+   <div class="message" id="message-box">
+       {% for message in messages %}
+           <p>{{ message }}</p>
+       {% endfor %}
+   </div>
+{% endif %}
+
+
+   <!-- JavaScript -->
+   <script>
+       document.addEventListener("DOMContentLoaded", function () {
+           const messageBox = document.getElementById("message-box");
+           if (messageBox) {
+               messageBox.style.display = "block";
+               setTimeout(() => {
+                   messageBox.style.display = "none";
+               }, 3000);
+           }
+       });
+   </script>
+
+
+   
+
+</body>
+</html>
